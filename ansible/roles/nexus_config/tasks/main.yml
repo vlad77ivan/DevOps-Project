@@ -1,0 +1,54 @@
+---
+# tasks file for nexus_config
+- name: Wait for nexus to start
+  wait_for:
+    host: "{{ nexus_ip }}"
+    port: "{{ nexus_port }}"
+    delay: 10
+    state: started
+
+- name: Change admin password
+  uri:
+    url: "{{ nexus_admin_password_url }}"
+    user: "{{ nexus_admin_user }}"
+    password: "{{ nexus_admin_default_password }}"
+    method: PUT
+    force_basic_auth: yes
+    headers:
+      Content-Type: text/plain
+    body: "{{ nexus_admin_password }}"
+    return_content: yes
+    status_code:
+      - 204
+
+- name: Add roles to nexus
+  uri:
+    url: "{{ nexus_roles_url }}"
+    user: "{{ nexus_admin_user }}"
+    password: "{{ nexus_admin_password }}"
+    method: POST
+    force_basic_auth: yes
+    headers:
+        Content-Type: application/json
+    src: "{{ item }}"
+    status_code:
+      - 200
+      - 500
+  with_items:
+    - "{{ nexus_roles }}"
+
+- name: Add users to nexus
+  uri:
+    url: "{{ nexus_users_url }}"
+    user: "{{ nexus_admin_user }}"
+    password: "{{ nexus_admin_password }}"
+    method: POST
+    force_basic_auth: yes
+    headers:
+        Content-Type: application/json
+    src: "{{ item }}"
+    status_code:
+      - 200
+      - 500
+  with_items:
+    - "{{ nexus_users }}"

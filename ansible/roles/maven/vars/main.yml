@@ -1,0 +1,6 @@
+---
+# vars file for maven
+maven_link: https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+maven_tar_gz: apache-maven-3.6.3-bin.tar.gz
+maven_version: apache-maven-3.6.3
+jdk_path: /opt/jdk/jdk1.8.0_202

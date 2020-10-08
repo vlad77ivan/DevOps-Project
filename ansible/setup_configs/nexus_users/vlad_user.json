@@ -1,0 +1,11 @@
+{
+  "userId": "vlad",
+  "firstName": "Vlad",
+  "lastName": "Ivan",
+  "emailAddress": "vlad@undeva.com",
+  "password": "nuadmin",
+  "status": "active",
+  "roles": [
+    "dev"
+  ]
+}

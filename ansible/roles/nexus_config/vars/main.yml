@@ -1,0 +1,17 @@
+---
+# vars file for nexus_config
+nexus_ip: 192.168.77.11
+nexus_port: 8080
+
+nexus_admin_password_url: http://192.168.77.11:8081/service/rest/beta/security/users/admin/change-password
+nexus_admin_user: admin
+nexus_admin_default_password: admin123
+nexus_admin_password: admin
+
+nexus_roles_url: http://192.168.77.11:8081/service/rest/beta/security/roles
+nexus_roles:
+  - /vagrant/ansible/setup_configs/nexus_roles/dev_role.json
+
+nexus_users_url: http://192.168.77.11:8081/service/rest/beta/security/users
+nexus_users:
+  - /vagrant/ansible/setup_configs/nexus_users/vlad_user.json

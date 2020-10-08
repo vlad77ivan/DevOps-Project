@@ -1,0 +1,11 @@
+{
+  "userId": "string",
+  "firstName": "string",
+  "lastName": "string",
+  "emailAddress": "string",
+  "password": "string",
+  "status": "active",
+  "roles": [
+    "string"
+  ]
+}

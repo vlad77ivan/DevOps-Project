@@ -1,0 +1,33 @@
+---
+# tasks file for nexus
+- name: Install prerequisites
+  block:
+    - apt:
+        name: "{{ packages }}"
+        update_cache: true
+    - pip:
+        name: "{{ pip_packages }}"
+
+- name: Create a data directory for nexus
+  file:
+    path: "{{ nexus_data_local_path }}"
+    owner: "200"
+    state: directory
+    mode: '0755'
+
+- name: Create nexus container
+  docker_container:
+    name: nexus
+    image: sonatype/nexus3
+    ports: '{{ nexus_port }}:{{ nexus_port }}'
+    volumes: '{{ nexus_data_local_path }}:/nexus-data'
+    restart_policy: always
+    env:
+      NEXUS_SECURITY_RANDOMPASSWORD: "false"
+
+- name: Wait for nexus to start
+  wait_for:
+    host: "{{ nexus_ip }}"
+    port: "{{ nexus_port }}"
+    delay: 10
+    state: started

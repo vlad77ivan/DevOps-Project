@@ -1,0 +1,7 @@
+---
+# tasks file for production_config
+- name: Add vagrant to docker group
+  user:
+    name: vagrant
+    groups: docker
+    append: yes

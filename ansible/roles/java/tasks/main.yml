@@ -1,0 +1,30 @@
+---
+# tasks file for ansible
+- name: Create a /opt/jdk if it does not exist
+  file:
+    path: /opt/jdk
+    state: directory
+    mode: '0755'
+
+- name: Unarchive jdk file
+  unarchive:
+    src: "{{ jdk_directory }}{{ jdk_tar_gz }}"
+    dest: /opt/jdk
+    remote_src: yes
+
+- name: Set oracle JDK as the default JVM
+  alternatives:
+    link: "{{ item.link }}"
+    name: "{{ item.name }}"
+    path: "/opt/jdk/{{ item.relative_path }}"
+    priority: "{{ item.priority }}"
+  with_items:
+    - "{{ java_alternatives }}"
+
+- name: Java version
+  block:
+    - name: Get java version
+      shell: java -version 2>&1 | grep version | awk '{print $3}' | sed 's/"//g'
+      register: java_version
+
+    - debug: msg="{{ java_version.stdout_lines }}"

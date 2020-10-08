@@ -1,0 +1,13 @@
+---
+# vars file for production_deploy
+packages:
+    - python3-pip
+
+pip_packages:
+    - docker-py
+
+deploy_script_path: /vagrant/ansible/setup_configs/production_scripts/deploy.sh
+deploy_script_destination: /home/vagrant/deploy.sh
+
+docker_username: vlad0297
+docker_token: "your-token"

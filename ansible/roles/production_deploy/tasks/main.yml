@@ -1,0 +1,24 @@
+---
+# tasks file for production_deploy
+- name: Install prerequisites
+  block:
+    - apt:
+        name: "{{ packages }}"
+        update_cache: true
+    - pip:
+        name: "{{ pip_packages }}"
+
+- name: Copy deploy script
+  copy:
+    src: "{{ deploy_script_path }}"
+    dest: "{{ deploy_script_destination }}"
+    owner: vagrant
+    group: vagrant
+    mode: '0770'
+
+- name: Login vagrant to dockerhub
+  docker_login:
+    username: "{{ docker_username }}"
+    password: "{{ docker_token }}"
+  become: yes
+  become_user: vagrant

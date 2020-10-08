@@ -1,0 +1,16 @@
+---
+# tasks file for git
+- name: Install git
+  apt:
+    name: git
+    update_cache: yes
+
+- name: Git version
+  block:
+    - name: Get git version
+      shell: git --version | cut -d' ' -f3
+      args:
+        executable: /bin/bash
+      register: git_version
+
+    - debug: msg="{{ git_version.stdout_lines }}"

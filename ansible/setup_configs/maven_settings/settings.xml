@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd">
+   <mirrors>
+       <mirror>
+         <id>maven-group</id>
+         <mirrorOf>*</mirrorOf>
+         <url>http://192.168.77.11:8081/repository/maven-public/</url>
+       </mirror>
+       <mirror>
+         <id>maven-snapshots</id>
+         <mirrorOf>*</mirrorOf>
+         <url>http://192.168.77.11:8081/repository/maven-snapshots/</url>
+       </mirror>
+       <mirror>
+         <id>maven-releases</id>
+         <mirrorOf>*</mirrorOf>
+         <url>http://192.168.77.11:8081/repository/maven-releases/</url>
+       </mirror>
+   </mirrors>
+   <servers>
+     <server>
+       <id>maven-group</id>
+       <username>vlad</username>
+       <password>nuadmin</password>
+     </server>
+     <server>
+       <id>maven-snapshots</id>
+       <username>vlad</username>
+       <password>nuadmin</password>
+     </server>
+     <server>
+       <id>maven-releases</id>
+       <username>vlad</username>
+       <password>nuadmin</password>
+     </server>
+  </servers>
+</settings>

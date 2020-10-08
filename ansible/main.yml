@@ -1,0 +1,31 @@
+---
+- hosts: docker_nodes
+
+  become: yes
+  become_user: root
+  become_method: sudo
+
+  roles:
+     - docker
+
+- hosts: jenkins_nodes
+
+  become: yes
+  become_user: root
+  become_method: sudo
+
+  roles:
+    - java
+    - maven
+    - git
+    - geerlingguy.jenkins
+    - nexus
+
+- hosts: production_nodes
+
+  become: yes
+  become_user: root
+  become_method: sudo
+
+  roles:
+    - production_config

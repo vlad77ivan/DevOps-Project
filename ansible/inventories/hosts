@@ -1,0 +1,14 @@
+localhost ansible_connection=local
+
+jenkins.local ansible_host=192.168.77.11
+production.local ansible_host=192.168.77.12
+
+[jenkins_nodes]
+jenkins.local
+
+[docker_nodes]
+jenkins.local
+production.local
+
+[production_nodes]
+production.local

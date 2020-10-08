@@ -1,0 +1,13 @@
+{
+  "id": "dev",
+  "name": "dev",
+  "description": "dev",
+  "privileges": [
+    "nx-repository-view-maven2-maven-central-*",
+    "nx-repository-view-maven2-maven-public-*",
+    "nx-repository-view-maven2-maven-releases-*",
+    "nx-repository-view-maven2-maven-snapshots-*"
+  ],
+  "roles": [
+  ]
+}

@@ -1,0 +1,18 @@
+- hosts: production_nodes
+
+  become: yes
+  become_user: root
+  become_method: sudo
+
+  roles:
+    - production_deploy
+
+- hosts: jenkins_nodes
+
+  become: yes
+  become_user: root
+  become_method: sudo
+
+  roles:
+    - nexus_config
+    - jenkins_config

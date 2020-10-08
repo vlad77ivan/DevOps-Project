@@ -1,0 +1,49 @@
+---
+# tasks file for maven
+- name: Download Apache maven
+  get_url:
+    url: "{{ maven_link }}"
+    dest: /usr/local
+    mode: '0755'
+
+- name: Extract downloaded archive
+  unarchive:
+    src: "/usr/local/{{ maven_tar_gz }}"
+    dest: /usr/local
+    remote_src: yes
+
+- name: Create a symbolic link to apache-maven
+  file:
+    src: "/usr/local/{{ maven_version }}"
+    dest: /usr/local/apache-maven
+    state: link
+
+- name: Create environment variables script
+  copy:
+    dest: "/etc/profile.d/apache-maven.sh"
+    content: |
+      export JAVA_HOME="{{ jdk_path }}"
+      export M2_HOME=/usr/local/apache-maven
+      export MAVEN_HOME=/usr/local/apache-maven
+      export PATH=${M2_HOME}/bin:${PATH}
+    mode: '0775'
+
+- name: Load the environment variables
+  shell: source /etc/profile.d/apache-maven.sh
+  args:
+    executable: /bin/bash
+  become: yes
+  become_user: vagrant
+
+- name: Maven version
+  block:
+    - name: Get maven version
+      shell: source /etc/profile.d/apache-maven.sh; mvn -version | head -1 | cut -d' ' -f3
+      args:
+        chdir: /home/vagrant/
+        executable: /bin/bash
+      register: maven_version
+
+    - debug: msg="{{ maven_version.stdout_lines }}"
+  become: yes
+  become_user: vagrant

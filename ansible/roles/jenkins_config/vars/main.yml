@@ -1,0 +1,39 @@
+---
+# vars file for jenkins_config
+jenkins_ip: 192.168.77.11
+jenkins_port: 8080
+
+maven_settings_path: /usr/local/apache-maven/conf/settings.xml
+maven_new_settings_path: /vagrant/ansible/setup_configs/maven_settings/settings.xml
+
+rsa_key_path: /vagrant/ssh/id_rsa
+ssh_cred_template_path: /vagrant/ansible/setup_configs/jenkins_credentials/ssh_cred_template.xml
+ssh_cred_path: /vagrant/ansible/setup_configs/jenkins_credentials/ssh_cred.xml
+
+jenkins_link: http://localhost:8080/
+
+jenkins_admin_user: admin
+jenkins_admin_password: admin
+
+jenkins_dev_user: vlad
+jenkins_dev_password: nuadmin
+
+jenkins_cli_directory: /opt
+
+jenkins_creds:
+  - /vagrant/ansible/setup_configs/jenkins_credentials/dockerhub_cred.xml
+  - /vagrant/ansible/setup_configs/jenkins_credentials/github_cred.xml
+  - /vagrant/ansible/setup_configs/jenkins_credentials/ssh_cred.xml
+
+jenkins_users:
+  - jenkins.model.Jenkins.instance.securityRealm.createAccount("vlad", "nuadmin")
+
+jenkins_dsls:
+  - name: DSL
+    path: /vagrant/ansible/setup_configs/jenkins_xmls/dsl.xml
+
+jenkins_dsl_builds:
+  - DSL
+
+jenkins_builds:
+  - HelloWorldMaven

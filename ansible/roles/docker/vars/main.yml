@@ -1,0 +1,20 @@
+---
+# vars file for docker
+packages:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+
+docker_apt_gpg_key: https://download.docker.com/linux/ubuntu/gpg
+docker_apt_release_channel: stable
+docker_apt_arch: amd64
+docker_apt_repository: "deb [arch={{ docker_apt_arch }}] https://download.docker.com/linux/ubuntu bionic {{ docker_apt_release_channel }}"
+
+docker_edition: "ce"
+docker_package: "docker-{{ docker_edition }}"
+docker_package_state: present
+
+docker_service_state: started
+docker_service_enabled: true
+docker_restart_handler_state: restarted

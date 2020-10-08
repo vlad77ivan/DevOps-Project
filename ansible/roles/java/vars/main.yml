@@ -1,0 +1,14 @@
+---
+# vars file for java
+jdk_directory: /vagrant/jdk/
+jdk_tar_gz: jdk-8u202-linux-x64.tar.gz
+
+java_alternatives:
+    - name: java
+      link: /usr/bin/java
+      relative_path: jdk1.8.0_202/bin/java
+      priority: 100
+    - name: javac
+      link: /usr/bin/javac
+      relative_path: jdk1.8.0_202/bin/javac
+      priority: 100

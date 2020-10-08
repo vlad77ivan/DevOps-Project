@@ -1,0 +1,15 @@
+---
+# vars file for nexus
+packages:
+    - python3-pip
+
+pip_packages:
+    - docker-py
+
+nexus_update_password_url: http://192.168.77.11:8081/service/rest/beta/security/users/admin/change-password
+nexus_admin_password: /vagrant/ansible/nexus_admin.txt
+
+nexus_data_local_path: /home/vagrant/nexus-data
+
+nexus_ip: 192.168.77.11
+nexus_port: 8081

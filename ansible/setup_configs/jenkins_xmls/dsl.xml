@@ -1,0 +1,119 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.plugins.jira.JiraProjectProperty plugin="jira@3.1.1"/>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.31">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <javaposse.jobdsl.plugin.ExecuteDslScripts plugin="job-dsl@1.77">
+      <scriptText>pipelineJob(&apos;HelloWorldMaven&apos;) {
+  definition {
+    cps {
+      script(&apos;&apos;&apos;
+        def dockerimg
+
+        pipeline {
+            agent any
+
+            options {
+              disableConcurrentBuilds()
+            }
+
+            environment {
+              giturl=&quot;https://github.com/vlad77ivan/HelloWorld-Maven.git&quot;
+              branch=&quot;master&quot;
+              gitcred=&quot;github-cred&quot;
+              registry=&quot;vlad0297/helloworld-maven&quot;
+              tag=&quot;latest&quot;
+              registrycred=&apos;dockerhub-cred&apos;
+            }
+
+            stages {
+              stage(&apos;Initialize&apos;) {
+                steps {
+                  cleanWs()
+                  script {
+                    properties([pipelineTriggers([pollSCM(&apos;*/5 * * * *&apos;)])])
+                  }
+                  git credentialsId: env.gitcred, branch: env.branch, url: env.giturl
+                }
+              }
+              stage(&apos;Build&apos;) {
+                steps {
+                  sh &apos;mvn -B -DskipTests clean package&apos;
+                }
+              }
+              stage(&apos;Test&apos;) {
+                steps {
+                  sh &apos;mvn test&apos;
+                }
+                post {
+                  always {
+                      junit &apos;target/surefire-reports/*.xml&apos;
+                  }
+                }
+              }
+              stage(&apos;Building our image&apos;) {
+                steps {
+                  script {
+                    dockerimg = docker.build(&quot;$env.registry:$env.tag&quot;)
+                  }
+                }
+              }
+              stage(&apos;Deploy our image&apos;) {
+                steps {
+                  script {
+                    docker.withRegistry( &apos;&apos;, registrycred ) {
+                      dockerimg.push()
+                    }
+                  }
+                }
+              }
+              stage(&apos;Cleaning up&apos;) {
+                steps {
+                  sh &quot;docker rmi $env.registry:$env.tag&quot;
+                }
+              }
+              stage(&apos;Deploy&apos;) {
+                steps {
+                  sshagent (credentials: [&apos;ssh-cred&apos;]) {
+                    sh &apos;ssh -o StrictHostKeyChecking=no -l vagrant 192.168.77.12 ./deploy.sh&apos;
+                  }
+                }
+              }
+            }
+          }
+      &apos;&apos;&apos;.stripIndent())
+      sandbox()
+    }
+  }
+}</scriptText>
+      <usingScriptText>true</usingScriptText>
+      <sandbox>false</sandbox>
+      <ignoreExisting>false</ignoreExisting>
+      <ignoreMissingFiles>false</ignoreMissingFiles>
+      <failOnMissingPlugin>false</failOnMissingPlugin>
+      <failOnSeedCollision>false</failOnSeedCollision>
+      <unstableOnDeprecation>false</unstableOnDeprecation>
+      <removedJobAction>IGNORE</removedJobAction>
+      <removedViewAction>IGNORE</removedViewAction>
+      <removedConfigFilesAction>IGNORE</removedConfigFilesAction>
+      <lookupStrategy>JENKINS_ROOT</lookupStrategy>
+    </javaposse.jobdsl.plugin.ExecuteDslScripts>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

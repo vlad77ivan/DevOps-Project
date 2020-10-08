@@ -1,0 +1,105 @@
+---
+# tasks file for jenkins_config
+- name: Wait for jenkins to start
+  wait_for:
+    host: "{{ jenkins_ip }}"
+    port: "{{ jenkins_port }}"
+    delay: 10
+    state: started
+
+- name: Wait for jenkins to load plugins
+  pause:
+    minutes: 5
+
+- name: Overwrite default maven settings with custom nexus proxy
+  block:
+    - name: Remove old settings
+      file:
+        path: "{{ maven_settings_path }}"
+        state: absent
+
+    - name: Add new settings
+      copy:
+        src: "{{ maven_new_settings_path }}"
+        dest: "{{ maven_settings_path }}"
+        remote_src: yes
+
+    - name: Fix permissions
+      file:
+        path: "{{ maven_settings_path }}"
+        mode: '0644'
+
+- name: Template ssh credentials
+  block:
+    - name: Get RSA key
+      shell: 'cat {{ rsa_key_path }}'
+      args:
+        executable: /bin/bash
+      register: RSA_PRIVATE_KEY
+
+    - name: Template file
+      template:
+          src: "{{ ssh_cred_template_path }}"
+          dest: "{{ ssh_cred_path }}"
+          mode: '0755'
+
+- name: Fix jenkins-cli permissions
+  file:
+    path: '{{ jenkins_cli_directory }}/jenkins-cli.jar'
+    owner: jenkins
+    mode: '0775'
+
+- name: Add credentials to jenkins
+  shell: 'cat {{ item }} | java -jar jenkins-cli.jar -s {{ jenkins_link }} -auth {{ jenkins_admin_user }}:{{ jenkins_admin_password }} create-credentials-by-xml system::system::jenkins _'
+  args:
+    chdir: "{{ jenkins_cli_directory }}"
+    executable: /bin/bash
+  become: yes
+  become_user: jenkins
+  with_items:
+    - "{{ jenkins_creds }}"
+  ignore_errors: true
+
+- name: Add users to jenkins
+  shell: 'echo ''{{ item }}'' | java -jar ./jenkins-cli.jar -s {{ jenkins_link }} -auth {{ jenkins_admin_user }}:{{ jenkins_admin_password }} groovy ='
+  args:
+    chdir: "{{ jenkins_cli_directory }}"
+    executable: /bin/bash
+  become: yes
+  become_user: jenkins
+  with_items:
+    - "{{ jenkins_users }}"
+  ignore_errors: true
+
+- name: Create DSL scripts
+  shell: 'java -jar ./jenkins-cli.jar -s {{ jenkins_link }} -auth {{ jenkins_dev_user }}:{{ jenkins_dev_password }} create-job {{ item.name }} < {{ item.path }}'
+  args:
+    chdir: "{{ jenkins_cli_directory }}"
+    executable: /bin/bash
+  become: yes
+  become_user: jenkins
+  with_items:
+    - "{{ jenkins_dsls }}"
+  ignore_errors: true
+
+- name: Build DSL
+  shell: 'java -jar ./jenkins-cli.jar -s {{ jenkins_link }} -auth {{ jenkins_dev_user }}:{{ jenkins_dev_password }} build {{ item }}'
+  args:
+    chdir: "{{ jenkins_cli_directory }}"
+    executable: /bin/bash
+  become: yes
+  become_user: jenkins
+  with_items:
+    - "{{ jenkins_dsl_builds }}"
+  ignore_errors: true
+
+- name: Build job
+  shell: 'java -jar ./jenkins-cli.jar -s {{ jenkins_link }} -auth {{ jenkins_dev_user }}:{{ jenkins_dev_password }} build {{ item }}'
+  args:
+    chdir: "{{ jenkins_cli_directory }}"
+    executable: /bin/bash
+  become: yes
+  become_user: jenkins
+  with_items:
+    - "{{ jenkins_builds }}"
+  ignore_errors: true
